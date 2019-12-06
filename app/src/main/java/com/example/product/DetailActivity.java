@@ -34,6 +34,8 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        assert getSupportActionBar() != null;
         getSupportActionBar().setTitle("Detail Product");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -106,5 +108,11 @@ public class DetailActivity extends AppCompatActivity {
 
         imgDetail.setVisibility(View.VISIBLE);
         imgDetail.setImageBitmap(bm);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp(){
+        finish();
+        return true;
     }
 }

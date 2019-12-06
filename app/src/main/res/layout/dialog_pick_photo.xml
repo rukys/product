@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical"
+        android:weightSum="2">
+
+        <Button
+            android:id="@+id/btn_pick_gallery"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Galeri"/>
+
+        <Button
+            android:id="@+id/btn_pick_camera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Kamera"/>
+
+    </LinearLayout>
+
+</LinearLayout>
