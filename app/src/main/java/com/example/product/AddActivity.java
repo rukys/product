@@ -1,6 +1,8 @@
 package com.example.product;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
@@ -39,6 +41,12 @@ import java.util.Date;
 import java.util.Locale;
 
 public class AddActivity extends AppCompatActivity {
+
+    private String[] mPermission = {Manifest.permission.CAMERA,
+            android.Manifest.permission.READ_EXTERNAL_STORAGE,
+            android.Manifest.permission.WRITE_EXTERNAL_STORAGE,};
+
+    private static final int REQUEST_CODE_PERMISSION = 2;
 
     private DatabaseHelper DBProduct;
     private ProductModel product;
@@ -110,12 +118,12 @@ public class AddActivity extends AppCompatActivity {
         imgProduct = findViewById(R.id.img_product);
     }
 
-    private void pickFromGallery(){
-        Intent intent=new Intent(Intent.ACTION_PICK);
+    private void pickFromGallery() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
         String[] mimeTypes = {"image/jpeg", "image/png"};
-        intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
-        startActivityForResult(intent,GALLERY_REQUEST_CODE);
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
     }
 
     private void pickFromCamera() {
@@ -128,15 +136,17 @@ public class AddActivity extends AppCompatActivity {
                 startActivityForResult(intent, CAMERA_REQUEST_CODE);
 
             } else {
-                Toast.makeText(this, "Camera Permission error", Toast.LENGTH_SHORT).show();
+                initRequestPermission();
+
             }
-        } catch (Exception e){
-            Toast.makeText(this, "Camera Permission error", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            initRequestPermission();
+
         }
 
     }
 
-    private void convertBase64(){
+    private void convertBase64() {
         imgProduct.setDrawingCacheEnabled(true);
         Bitmap bitmap = imgProduct.getDrawingCache();
 
@@ -151,23 +161,19 @@ public class AddActivity extends AppCompatActivity {
         imgProduct.setDrawingCacheEnabled(true);
         Bitmap bm = imgProduct.getDrawingCache();
 
-        if (id.isEmpty() ){
+        if (id.isEmpty()) {
             etId.setError("id tidak boleh kosong");
 
-        } else if (name.isEmpty()){
+        } else if (name.isEmpty()) {
             etName.setError("nama tidak boleh kosong");
 
         } else if (desc.isEmpty()) {
             etDesc.setError("deksripsi tidak boleh kosong");
 
-        }
-
-        else if (bm == null){
+        } else if (bm == null) {
             Toast.makeText(getApplicationContext(), "Upload foto terlebih dahulu", Toast.LENGTH_LONG).show();
 
-        }
-
-        else {
+        } else {
             convertBase64();
 
             product = new ProductModel();
@@ -191,15 +197,47 @@ public class AddActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onSupportNavigateUp(){
+    public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
 
-    public void onActivityResult(int requestCode,int resultCode,Intent data){
+    private void initRequestPermission(){
+        if (ActivityCompat.checkSelfPermission(this, mPermission[0]) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, mPermission[1]) == PackageManager.PERMISSION_GRANTED ||
+                ActivityCompat.checkSelfPermission(this, mPermission[2]) == PackageManager.PERMISSION_GRANTED) {
+            //Toast.makeText(HomeActivity.this, "You have already granted this permission!", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                if (ActivityCompat.checkSelfPermission(this, mPermission[0]) != PackageManager.PERMISSION_GRANTED ||
+                        ActivityCompat.checkSelfPermission(this, mPermission[1]) != PackageManager.PERMISSION_GRANTED ||
+                        ActivityCompat.checkSelfPermission(this, mPermission[2]) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(AddActivity.this, mPermission, REQUEST_CODE_PERMISSION);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.e("Req Code", "" + requestCode);
+        if (requestCode == REQUEST_CODE_PERMISSION) {
+            if (grantResults.length == 3 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                    grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+
+            }
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Result code is RESULT_OK only if the user selects an Image
         if (resultCode == Activity.RESULT_OK)
-            switch (requestCode){
+            switch (requestCode) {
                 case GALLERY_REQUEST_CODE:
                     //data.getData returns the content URI for the selected Image
                     Uri selectedImage = data.getData();
