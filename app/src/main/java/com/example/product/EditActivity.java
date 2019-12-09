@@ -3,13 +3,18 @@ package com.example.product;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -35,6 +40,7 @@ public class EditActivity extends AppCompatActivity {
 
     private String product_id;
     public static final int GALLERY_REQUEST_CODE = 001;
+    public static final int CAMERA_REQUEST_CODE = 002;
     private String encodedImage;
 
     @Override
@@ -54,9 +60,26 @@ public class EditActivity extends AppCompatActivity {
         btnImagePicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater inflater = (LayoutInflater) v.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                View dialogLayout = inflater.inflate(R.layout.dialog_pick_photo, null);
-                pickFromGallery();
+                final CharSequence[] options = {"Kamera", "Galeri"};
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setCancelable(true);
+                //builder.setTitle("Select Option");
+                builder.setItems(options, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int item) {
+                        if (options[item].equals("Kamera")) {
+                            pickFromCamera();
+                            dialog.dismiss();
+
+                        } else if (options[item].equals("Galeri")) {
+                            pickFromGallery();
+                            dialog.dismiss();
+
+                        }
+                    }
+                });
+                builder.show();
 
             }
         });
@@ -64,7 +87,7 @@ public class EditActivity extends AppCompatActivity {
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initEditProduct(v);
+                initEditProduct();
             }
         });
     }
@@ -83,6 +106,26 @@ public class EditActivity extends AppCompatActivity {
         String[] mimeTypes = {"image/jpeg", "image/png"};
         intent.putExtra(Intent.EXTRA_MIME_TYPES,mimeTypes);
         startActivityForResult(intent,GALLERY_REQUEST_CODE);
+    }
+
+    private void pickFromCamera() {
+        PackageManager pm = getPackageManager();
+        int hasPerm = pm.checkPermission(Manifest.permission.CAMERA, getPackageName());
+
+        try {
+            if (hasPerm == PackageManager.PERMISSION_GRANTED) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, CAMERA_REQUEST_CODE);
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Permission error", Toast.LENGTH_LONG).show();
+
+            }
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Permission error", Toast.LENGTH_LONG).show();
+
+        }
+
     }
 
     private void convertBase64(){
@@ -111,7 +154,7 @@ public class EditActivity extends AppCompatActivity {
         }
     }
 
-    private void initEditProduct(View v) {
+    private void initEditProduct() {
         String name = etName.getText().toString().trim();
         String desc = etDesc.getText().toString().trim();
         imgProductEdit.setDrawingCacheEnabled(true);

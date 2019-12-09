@@ -74,9 +74,6 @@ public class AddActivity extends AppCompatActivity {
         btnPhotoPicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LayoutInflater inflater = (LayoutInflater) v.getContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-                View dialogLayout = inflater.inflate(R.layout.dialog_pick_photo, null);
-
                 final CharSequence[] options = {"Kamera", "Galeri"};
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
@@ -206,7 +203,7 @@ public class AddActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, mPermission[0]) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this, mPermission[1]) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(this, mPermission[2]) == PackageManager.PERMISSION_GRANTED) {
-            //Toast.makeText(HomeActivity.this, "You have already granted this permission!", Toast.LENGTH_SHORT).show();
+
         } else {
             try {
                 if (ActivityCompat.checkSelfPermission(this, mPermission[0]) != PackageManager.PERMISSION_GRANTED ||
